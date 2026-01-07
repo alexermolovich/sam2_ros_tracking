@@ -1,0 +1,5 @@
+# owl_node_params.yaml
+/**:
+  ros__parameters:
+    rgb_topic: "/camera/rgb/image_raw"
+    depth_topic: "/camera/depth/image_raw"

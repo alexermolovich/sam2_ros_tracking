@@ -1,0 +1,6 @@
+string settings 
+int32[] bounding_box # bounding box, box is [x_min, y_min, x_max, y_max]
+string inferce_type
+string inference_state # continue, stop, reset(new target only) 
+---
+string output

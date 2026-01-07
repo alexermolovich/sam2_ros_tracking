@@ -1,0 +1,5 @@
+sensor_msgs/Image depth
+sensor_msgs/Image rgb
+string target_class
+---
+string output
