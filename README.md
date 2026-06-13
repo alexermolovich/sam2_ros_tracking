@@ -9,14 +9,14 @@ The repository contains two ROS 2 packages:
 - `vision_utils`: Python nodes for OWLv2 inference, SAM2 inference, bounding-box
   selection, and tracking.
 
-At a high level, the intended flow is:
+At a high level, the workflow is:
 
 1. Subscribe to RGB/depth camera topics.
 2. Use OWLv2 to find a text-prompted object and return its bounding box.
 3. Send that bounding box to SAM2 to create an object mask.
 4. Initialize a DeepSORT tracker and publish trackable updates.
 
-## Repository Layout
+## Repository Structure
 
 ```text
 .
@@ -83,7 +83,7 @@ colcon build --symlink-install
 source install/setup.bash
 ```
 
-## Docker Workflow
+## Docker Setup
 
 Build and enter the container:
 
@@ -95,7 +95,7 @@ Build and enter the container:
 The container mounts this repository at `/workspace`, uses host networking, and
 passes through the GPU and display environment.
 
-Inside the container, install/source ROS 2 as needed, then build:
+Inside the container, install and source ROS 2 as needed, then build:
 
 ```bash
 bash docker/ros2_setup.sh
@@ -139,18 +139,16 @@ ros2 run vision_utils owl_inference --ros-args \
 Call the text-prompt service:
 
 ```bash
-ros2 service call /owl_inference/owl_infernce_topic vision_msgs/srv/OwlInference \
+ros2 service call /owl_inference/owl_inference_topic vision_msgs/srv/OwlInference \
   "{target_class: 'mug'}"
 ```
 
 When run without the launch namespace, the service is:
 
 ```bash
-ros2 service call /owl_infernce_topic vision_msgs/srv/OwlInference \
+ros2 service call /owl_inference_topic vision_msgs/srv/OwlInference \
   "{target_class: 'mug'}"
 ```
-
-Note: the service names are currently spelled `infernce` in the code.
 
 ## Running SAM2 Tracking
 
@@ -164,11 +162,11 @@ Create a trackable from a bounding box:
 
 ```bash
 ros2 service call /sam2_inference_image vision_msgs/srv/Sam2Inference \
-  "{settings: '', bounding_box: [100, 120, 320, 360], inferce_type: 'image', inference_state: 'continue'}"
+  "{settings: '', bounding_box: [100, 120, 320, 360], inference_type: 'image', inference_state: 'continue'}"
 ```
 
-The current implementation creates a trackable with ID `20` and publishes its
-latest tracked box as a string:
+The SAM2 service creates a trackable with ID `20` and publishes its latest
+tracked box as a string:
 
 ```bash
 ros2 topic echo /trackable/id_20
@@ -192,8 +190,8 @@ or virtual display.
 
 | Service name | Type | Purpose |
 | --- | --- | --- |
-| `/owl_infernce_topic` | `vision_msgs/srv/OwlInference` | Uses the latest subscribed RGB frame and a text class prompt to return the best OWLv2 bounding box as a string. |
-| `/owl_infernce_message` | `vision_msgs/srv/OwlInferenceM` | Intended to run OWLv2 on an image provided in the service request. |
+| `/owl_inference_topic` | `vision_msgs/srv/OwlInference` | Uses the latest subscribed RGB frame and a text class prompt to return the best OWLv2 bounding box as a string. |
+| `/owl_inference_message` | `vision_msgs/srv/OwlInferenceM` | Intended to run OWLv2 on an image provided in the service request. |
 | `/sam2_inference_image` | `vision_msgs/srv/Sam2Inference` | Accepts a bounding box and initializes a SAM2/DeepSORT trackable. |
 
 ### Topics
@@ -202,7 +200,7 @@ or virtual display.
 | --- | --- | --- | --- |
 | `/camera/rgb/image_raw` | `sensor_msgs/msg/Image` | Subscribe | Default RGB stream. |
 | `/camera/depth/image_raw` | `sensor_msgs/msg/Image` | Subscribe | Default depth stream in config/SAM2. |
-| `/trackable/id_20` | `std_msgs/msg/String` | Publish | Current hard-coded trackable output topic. |
+| `/trackable/id_20` | `std_msgs/msg/String` | Publish | Trackable output topic. |
 
 ## Development
 
@@ -220,16 +218,3 @@ ros2 interface show vision_msgs/srv/OwlInference
 ros2 interface show vision_msgs/srv/OwlInferenceM
 ros2 interface show vision_msgs/srv/Sam2Inference
 ```
-
-## Current Caveats
-
-This repository is still in prototype shape. A few implementation details to keep
-in mind while using or extending it:
-
-- `owl_infernce_topic` and `owl_infernce_message` are misspelled service names.
-- `Sam2Inference.srv` has a misspelled `inferce_type` field.
-- `OwlInferenceM.srv` returns `output`, but `owl_inference.py` currently writes
-  to `answer` in the message-service callback.
-- `vision_utils/package.xml` does not yet declare every runtime dependency used
-  by the Python nodes.
-- The SAM2 tracking service currently hard-codes trackable ID `20`.

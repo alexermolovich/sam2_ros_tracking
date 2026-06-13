@@ -61,13 +61,13 @@ class OwlService(Node):
         # Services
         self.srv_message = self.create_service(
             OwlInferenceM,
-            "owl_infernce_message",
+            "owl_inference_message",
             self.owl_inference_message
         )
 
         self.srv_topic = self.create_service(
             OwlInference,
-            "owl_infernce_topic",
+            "owl_inference_topic",
             self.owl_inference_topic
         )
 
@@ -88,7 +88,7 @@ class OwlService(Node):
     # Services
     # ----------------------------
     def owl_inference_topic(self, request: OwlInference_Request, response: OwlInference_Response):
-        self.get_logger().info("Received /owl_infernce_topic service call.")
+        self.get_logger().info("Received /owl_inference_topic service call.")
 
         target_class_label = request.target_class
         if not target_class_label:
@@ -145,7 +145,7 @@ class OwlService(Node):
         return response
 
     def owl_inference_message(self, request: OwlInferenceM_Request, response: OwlInference_Response):
-        self.get_logger().info("Received /owl_infernce_message service call.")
+        self.get_logger().info("Received /owl_inference_message service call.")
 
         target_class_label = request.target_class
         if not target_class_label:

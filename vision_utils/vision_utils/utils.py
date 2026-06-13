@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from sensor_msgs.msg import Image
-# ========= Data Classes defintions =======#
+# ========= Data class definitions =======#
 
 @dataclass 
 class Camera:

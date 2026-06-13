@@ -92,7 +92,7 @@ class Sam2Service(Node):
         self.tracker_counter = 0        
         
         if self.tracking_type is None:
-            self.get_logger().error("Runtime Error: Model type is node defined")
+            self.get_logger().error("Runtime Error: Model type is not defined")
         
         self.device = Accelerator().device
         self._declare_parameters()
@@ -143,7 +143,7 @@ class Sam2Service(Node):
         )
         curr_time = self.get_clock().now().to_msg().sec 
         self.get_logger().debug(
-            f"Starting awaiting mutex in sam2_inference_image, time started: "
+            f"Starting mutex wait in sam2_inference_image, time started: "
             f"{self.get_clock().now().to_msg().sec}"
         )
         
@@ -174,7 +174,7 @@ class Sam2Service(Node):
             except Exception as e:
                 if e is KeyboardInterrupt:
                    response.output = "Keyboard interrupt is called, exiting the function" 
-                   self.get_logger().warn("Warn: Exception recieved keyboard interrupt, closing the function ")
+                   self.get_logger().warn("Warn: Exception received keyboard interrupt, closing the function ")
                    return response
                 else:
                     response.output = f"Function call threw an exception,  {e}"
@@ -187,7 +187,7 @@ class Sam2Service(Node):
                     self.get_logger().debug(log_message)
 
                 self.get_logger().debug(
-                    f"Finished mutex awaiting, function completed in:"
+                    f"Finished mutex wait, function completed in:"
                     f"{curr_time - self.get_clock().now().to_msg().sec}"
                 )
     def get_unique_random(self):
@@ -218,11 +218,11 @@ class Sam2Service(Node):
     
     #function logic description
     # start and get first detection from the inference sam2
-    # launcing async tracker that is gonna be publshing trackers output in async
-    # when async is done we are gonna go and check the assigned id in the container of all of them 
-    # it should let us know the next action to be peformed with the tracker 
+    # launching async tracker that is going to publish tracker output asynchronously
+    # when async is done we are going to check the assigned id in the container of all of them
+    # it should let us know the next action to be performed with the tracker
     #   if yes:
-    #       take the last tracked bouding box 
+    #       take the last tracked bounding box
     #       and re run the detection on it 
     #   if reset: no reset the tracker is just gonna be removed if done 
     #   if no just remove the tracker and free the resources  
@@ -264,7 +264,7 @@ class Sam2Service(Node):
         
         except Exception as e:
             if e is KeyboardInterrupt:
-                self.get_logger().warn("Warn: Exception recieved keyboard interrupt, closing the function ")
+                self.get_logger().warn("Warn: Exception received keyboard interrupt, closing the function ")
                 return 
             else:
                 self.get_logger().warn(f"Function call threw an exception, {e}") 
@@ -281,7 +281,7 @@ class Sam2Service(Node):
 
         curr_time = self.get_clock().now().to_msg().sec 
         self.get_logger().debug(
-            f"Starting awaiting mutex in sam2_inference_image, time started: "
+            f"Starting mutex wait in sam2_inference_image, time started: "
             f"{self.get_clock().now().to_msg().sec}"
         )
 
@@ -318,7 +318,7 @@ class Sam2Service(Node):
         except Exception as e:
             if e is KeyboardInterrupt:
                 response.output = "Keyboard interrupt is called, exiting the function" 
-                self.get_logger().warn("Warn: Exception recieved keyboard interrupt, closing the function ")
+                self.get_logger().warn("Warn: Exception received keyboard interrupt, closing the function ")
                 return response
             else:
                 response.output = f"Function call threw an exception,  {e}"
@@ -331,7 +331,7 @@ class Sam2Service(Node):
             self.get_logger().debug(log_message)
         
         self.get_logger().debug(
-                f"Finished mutex awaiting, function completed in:"
+                f"Finished mutex wait, function completed in:"
                 f"{curr_time - self.get_clock().now().to_msg().sec}"
             )
         return response
@@ -493,7 +493,7 @@ class Trackable:
 
         self._tracked_objects = self.tracker.update_tracks(detections, frame=frame)
         self._recent_bboxes.append(self._tracked_objects[0].to_ltrb())
-        self._node.get_logger().debug(f"Tracker Intialization at: {self._node.get_clock().now().seconds_nanoseconds()}")
+        self._node.get_logger().debug(f"Tracker initialization at: {self._node.get_clock().now().seconds_nanoseconds()}")
         self._node.get_logger().debug(f"Detections found: {self._tracked_objects[0].to_ltrb()}")
          
         
